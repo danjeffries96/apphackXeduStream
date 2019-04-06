@@ -1,5 +1,4 @@
 <template>
-<div>
     <div class="canvasdiv">
         <div class="toolbar">
             <div id="colors">
@@ -16,7 +15,6 @@
         </div>
         <canvas v-bind:ref="canvas" id="canvas"></canvas>
     </div>
-</div>
 </template>
 
 
@@ -33,11 +31,13 @@ export default {
             pensize: 5
         }
     },
+    props: ['canvasCallback'],
     mounted: function() {
         this.cd = new CanvasDraw(canvas)
         this.cd.main();
 
         console.log("done")
+        this.canvasCallback(canvas)
     },
     methods: {
         setFGColor(color) {
@@ -56,7 +56,8 @@ export default {
 
 <style scoped>
     .canvasdiv {
-        width:75%;
+        width:60%;
+        float:left;
         height:500px;
     }
     .colorpick {
@@ -77,6 +78,7 @@ export default {
         border-bottom-left-radius: 5px;
         padding: 1px;
         width:94px;
+        width: 10%;
         height:100%;
         float: left;
     }

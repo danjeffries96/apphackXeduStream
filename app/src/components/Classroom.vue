@@ -1,10 +1,26 @@
 <template>
-    <h1>Welcome to the Classroom {{$route.params.id}}</h1>
+    <div>
+        <h1>Welcome to the Classroom</h1>
+        <div id="main">
+            <Canvas :canvasCallback="canvasCallback"></Canvas>
+            <ChatBox></ChatBox>
+        </div>
+    </div>
 </template>
 
 <script>
+import Canvas from './Canvas'
+import ChatBox from './ChatBox'
 export default {
-    name: "Classroom"
-
+    name: "Classroom",
+    components: {
+        Canvas,
+        ChatBox
+    },
+    methods: {
+        canvasCallback(c) {
+            console.log(c)
+        }
+    }
 }
 </script>

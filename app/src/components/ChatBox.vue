@@ -47,8 +47,10 @@ export default {
 
 <style scoped>
     #chatbox {
+        position: absolute;
         margin: 0 auto 0 auto;
-        width: 25%;
+        width: 40%;
+        left: 60%;
     }
     form, button {
         margin-top: 15px

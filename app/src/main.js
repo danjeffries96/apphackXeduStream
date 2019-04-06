@@ -29,5 +29,5 @@ Vue.config.productionTip = false
 
 new Vue({
   //router
-  render: h => h(Canvas),
+  render: h => h(Classroom),
 }).$mount('#app')
