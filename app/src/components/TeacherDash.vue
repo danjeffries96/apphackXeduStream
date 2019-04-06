@@ -12,9 +12,22 @@
 <script>
 export default {
     name: "TeacherDash",
-    props: ['broadcasting', 'requestActive', 'reqMsg'],
-    methods: function() {
-        this.$emit('grantReq')
+    props: ['broadcasting', 'requestActive', 'reqMsg', "socket"],
+    watch: {
+      socket(newv, old) {
+        this.socket = newv;
+        this.socket.setReqActive = this.setReqActive;
+      }
+    },
+    methods: { 
+      grantReq() {
+        console.log("button clicked");
+        this.$emit('grantReq', this.socket.rtcNode.clientID);
+      },
+      setReqActive(x)  {
+        this.requestActive = x;
+      }
+
     }
 }
 </script>
@@ -22,5 +35,11 @@ export default {
 <style scoped>
 .hidden {
     display: none
+}
+
+#reqdiv {
+  position: absolute;
+  left: 10px;
+  top: 10px;
 }
 </style>

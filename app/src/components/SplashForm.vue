@@ -16,8 +16,9 @@
   <b-button v-on:click="createRoom" id="submit">Create Classroom!</b-button>
   </form>
   <form v-else id="joinRoom">
-  <b-form-input id="roomID" v-model="roomID" placeholder="Classroom ID"></b-form-input>
-  <b-button v-on:click="joinRoom" id="submit">Join Room</b-button>
+    <b-form-input id="roomID" v-model="roomID" placeholder="Classroom ID"></b-form-input>
+    <b-form-input id="username" v-model="username" placeholder="Username"></b-form-input>
+    <b-button v-on:click="joinRoom" id="submit">Join Room</b-button>
   </form>
   </span>
   </div>
@@ -79,6 +80,7 @@ export default {
       room_url: "",
       activeTab : 1 ,
       error: "",
+      username: "",
       };
   },
   methods: {
@@ -91,6 +93,7 @@ export default {
           else {
             this.$emit('clientType', 'teacher');
             this.$emit('roomName', this.roomName);
+            this.$emit("username", this.username);
           }
         })
         .catch(err => console.log("fetch error handling failed", err));
@@ -104,6 +107,7 @@ export default {
           else {
             this.$emit('clientType', 'student');
             this.$emit('roomID', this.roomID);
+            this.$emit("username", this.username);
           }
         })
         .catch(err => console.log("fetch error handling failed", err));

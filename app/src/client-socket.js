@@ -64,7 +64,10 @@ class ClientSocket {
         break;
       case "addChat":
         if (this.receiveChat == undefined) throw "Chat is uninitialized for this socket";
-        this.receiveChat(msg.text);
+        this.receiveChat(msg.text, msg.username);
+        break;
+      case "requestBroadcast": 
+        this.setReqActive(true);
         break;
       case "serverError": 
         console.log("server error: ", msg.error);

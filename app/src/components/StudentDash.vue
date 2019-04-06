@@ -10,10 +10,15 @@
 <script>
 export default {
     name: "StudentDash",
-    props: ['broadcasting'],
+    props: ['broadcasting', "socket"],
+    watch: {
+      socket(newv, old) {
+        this.socket = newv;
+      }
+    },
     methods: {
         requestAcc() {
-            this.$emit("requestAcc")
+            this.$emit("requestAcc", this.socket.rtcNode.clientID);
         }
     }
 }

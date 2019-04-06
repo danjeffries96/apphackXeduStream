@@ -4,7 +4,7 @@
         <ChatMessage
             v-for="msg in chatMessages"
             v-bind:key="msg.id"
-            v-bind:message="msg.message"
+            v-bind:message="msg.username + ': ' + msg.message"
             v-bind:question="msg.question"
         ></ChatMessage>
     </b-list-group>
@@ -27,7 +27,7 @@ export default {
             chat: ""
         }
     },
-    props: ['socket'],
+    props: ["socket", "username"],
     watch: {
       socket(newval, oldval) {
         this.socket = newval;
@@ -42,10 +42,12 @@ export default {
           this.socket.sendMessage({
             type: "userChat",
             text: this.chat,
+            username: this.username,
           })
         },
-        receiveChat(text) { // (from server)
+        receiveChat(text, username) { // (from server)
             var msg_obj = {
+                username: username,
                 message: text,
                 question: text.substr(-1) === '?',
                 id: this.cur_id++ 

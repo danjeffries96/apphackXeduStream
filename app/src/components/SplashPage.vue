@@ -3,8 +3,9 @@
     <SplashForm v-on:clientType="setClientType($event)" 
       v-on:roomID="setRoomID($event)" 
       v-on:roomName="setRoomName($event)" 
+      v-on:username="setUsername($event)" 
       v-if="clientType === 'none'"> </SplashForm>
-    <Classroom :clientType="clientType" :roomID="roomID" :roomName="roomName" v-else></Classroom> 
+    <Classroom :clientType="clientType" :roomID="roomID" :roomName="roomName" :username="username" v-else></Classroom> 
   </div>
 </template>
 
@@ -19,6 +20,7 @@ export default {
       clientType: "none",
       roomID: "none",
       roomName: "none",
+      username: "anon" + new Date().getTime(),
     }
   },
   methods: {
@@ -31,6 +33,10 @@ export default {
     },
     setRoomID(id) {
       this.roomID = id;
+    },
+    setUsername(n) {
+      if (n == "") return;
+      this.username = n;
     }
   },
   components: {

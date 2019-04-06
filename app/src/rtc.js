@@ -9,6 +9,7 @@ class RTCNode {
     this.outgoingRTC = new Map(); 
     this.incomingRTC = null; // single SimplePeer connection 
     this.vid = vid;
+    console.log("rtc vid = ", vid);
   }
 
   get clientID() {

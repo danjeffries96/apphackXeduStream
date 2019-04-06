@@ -30,6 +30,37 @@ app.post("/queryRoom", (req, res) => {
   );
 });
 
+app.post("/reqbroadcast", (req, res) => {
+    var cid = req.body.cid;
+    var tnode = classroomSets.get(cid).root;
+    console.log("broadcast rights requested by ", cid);
+
+    var tws = clients.get(tnode.clientID);
+    sendMessage(tws, {
+      type: "requestBroadcast",
+      cid: cid,
+    })
+
+    var checks = 0;
+    return new Promise((resolve, reject) => {
+      var query = setInterval(() => {
+        if (tnode.allowBroadcast) {
+          clearInterval(query);
+          resolve();
+        }
+        if (checks++ > 15) reject(); 
+      }, 1000);
+    }).then(() => {
+      res.status(200).json(
+        { allowBroadcast: true }
+      );
+    }).catch(err => {
+      res.status(200).json(
+        { allowBroadcast: false }
+      );
+    });
+});
+
 // map client ids to ws connection object
 const clients = new Map(); // map from client id to WS objects
 const classrooms = new Map(); // map from class room names to PeerTree objects
@@ -114,9 +145,15 @@ function processClientMessage(msg, req, ws) {
       break;
     case "userChat":
       clients.forEach(ws => {
-        sendMessage(ws, { type: "addChat" , text: msg.text});
+        sendMessage(ws, { type: "addChat" , text: msg.text, username: msg.username });
       });
       break;
+    case "grantBroadcast":
+      var tnode = peerNodes.get(req.session.id);
+      tnode.allowBroadcast = true;
+      var cnode = peerNodes.get(msg.cid);
+      connect(cnode, tnode);
+      break;  
     default: return error("Unknown message type: " + msg.type, ws);
   }
 }

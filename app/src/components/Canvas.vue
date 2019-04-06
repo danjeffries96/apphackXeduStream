@@ -18,7 +18,7 @@
         </div>
         <div v-bind:class="{ hidden: broadcasting }">
             <h3>Video element</h3>
-            <canvas v-bind:ref="video" id="video"></canvas>
+            <video v-bind:ref="video" id="video"></video>
         </div>
     </div>
 </template>
@@ -40,7 +40,7 @@ export default {
     },
     props: ['canvasCallback', 'clientType', 'broadcasting'],
     mounted: function() {
-        console.log(this.broadcasting)
+        console.log("broadcasting: ", this.broadcasting)
         if (this.broadcasting) {
             this.cd = new CanvasDraw(canvas)
             this.cd.main();
