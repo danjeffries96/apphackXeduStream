@@ -23,7 +23,7 @@ app.get("/", (req, res) => {
 
 // handle post data
 app.post("/classroom", (req,res) => {
-  console.log("post body = ", req.body);
+  console.log("roomname = ", req.roomName);
   res.end();
 });
 
