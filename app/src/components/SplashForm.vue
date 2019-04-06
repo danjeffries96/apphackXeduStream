@@ -84,14 +84,29 @@ export default {
   methods: {
     createRoom: function() {
       postData("/queryRoom", { roomName: this.roomName })
-        .then(respObj => error = respObj.error)
-        .catch(err => console.log("fetch error handling failed"));
-      this.$emit('clientType', 'teacher');
-      this.$emit('roomName', this.roomName);
+        .then(respObj => {
+          if (respObj.hasRoom) {
+            this.error = "Room name taken";
+          }
+          else {
+            this.$emit('clientType', 'teacher');
+            this.$emit('roomName', this.roomName);
+          }
+        })
+        .catch(err => console.log("fetch error handling failed", err));
     },
     joinRoom: function() {
-      this.$emit('clientType', 'student');
-      this.$emit('roomID', this.roomID);
+      postData("/queryRoom", { roomName: this.roomID })
+        .then(respObj => {
+          if (! respObj.hasRoom) {
+            this.error = `Room '${this.roomID}' does not exist.`;
+          }
+          else {
+            this.$emit('clientType', 'student');
+            this.$emit('roomID', this.roomID);
+          }
+        })
+        .catch(err => console.log("fetch error handling failed", err));
     }
   },
   props: {

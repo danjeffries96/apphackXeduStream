@@ -21,7 +21,10 @@ export default {
     name: "Classroom",
     props: ["clientType", "canvas", "roomID", "roomName"],
     data: function() {
-        return { broadcasting: false, requestActive: false}
+        return { 
+          broadcasting: false,
+          socket: null,
+        };
     },
     components: {
         Canvas,
@@ -39,6 +42,7 @@ export default {
             console.log("created room for type: ", this.clientType, canvas, video);
             if (this.clientType === "teacher") {
               this.rtc = new TeacherNode(canvas, video);
+              this.socket = this.rtc.socket;
               this.rtc.socket.checkWS().then(() => {
                 this.rtc.socket.sendMessage({ type: "createRoom", roomName: this.roomName });
                 console.log("sent create room req", this.roomName);
@@ -47,6 +51,7 @@ export default {
             }
             else if (this.clientType === "student") {
               this.rtc = new RTCNode(video);
+              this.socket = this.rtc.socket;
               this.rtc.socket.checkWS().then(() => {
                 this.rtc.socket.sendMessage({ 
                   type: "joinRoom",

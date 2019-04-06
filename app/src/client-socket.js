@@ -62,6 +62,10 @@ class ClientSocket {
         this.rtcNode.destroyIncoming();
         alert("Classroom has been closed");
         break;
+      case "addChat":
+        if (this.receiveChat == undefined) throw "Chat is uninitialized for this socket";
+        this.receiveChat(msg.text);
+        break;
       case "serverError": 
         console.log("server error: ", msg.error);
         break;

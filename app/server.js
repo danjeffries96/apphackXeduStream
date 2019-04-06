@@ -25,13 +25,8 @@ app.get("/", (req, res) => {
 app.use(bodyParser.json());
 
 app.post("/queryRoom", (req, res) => {
-  console.log("req body", req.body);
-  var errString = "";
-  if (clients.classrooms.has(req.body.roomName))
-    errString = "Room name already taken";
-
   res.status(200).json(
-    { error: errString }
+    { hasRoom: classrooms.has(req.body.roomName) }
   );
 });
 
@@ -116,6 +111,11 @@ function processClientMessage(msg, req, ws) {
       var classTree = classrooms.get(msg.roomName);
       if (classTree == undefined) return error("Unable to join non-existent classroom " + msg.roomName, ws);
       classTree.addChild(req.session.id);
+      break;
+    case "userChat":
+      clients.forEach(ws => {
+        sendMessage(ws, { type: "addChat" , text: msg.text});
+      });
       break;
     default: return error("Unknown message type: " + msg.type, ws);
   }
