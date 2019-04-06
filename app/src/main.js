@@ -13,18 +13,19 @@ import { SimplePeer } from './simplepeer.min.js'
 import $ from './jquery-3.3.1.min.js'
 
 import SplashPage from './components/SplashPage.vue'
+import SplashForm from './components/SplashForm.vue'
 import Classroom from './components/Classroom.vue'
 
 const router = new VueRouter({
   routes: [
-    { path: '/', component: SplashPage },
-    { path: '/room', component: Classroom },
+    { path: '/', component: SplashPage},
+    { path: '/room/:id', component: Classroom },
   ]
 })
 
 Vue.config.productionTip = false
 
 new Vue({
-  //router
-  render: h => h(SplashPage),
+  router
+  //render: h => h(SplashPage),
 }).$mount('#app')

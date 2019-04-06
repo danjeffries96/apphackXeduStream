@@ -57,10 +57,11 @@ export default {
       var resp;
       console.log(this.roomName)
       postData("/classroom", {"roomName": this.roomName}).then(data => resp = data)
+      this.room_url = "potato_salad"
       //if (!resp.err) {
         this.roomCreated = true
-        this.room_url = "http://google.com"
-        //this.room_url = resp.room_url
+        this.room_url = resp.room_url
+        //this.$router.push({path: `classroom/${this.room_url}`})
       //}
     },
     joinRoom: function() {
