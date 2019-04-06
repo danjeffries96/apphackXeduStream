@@ -15,6 +15,8 @@ import $ from './jquery-3.3.1.min.js'
 import SplashPage from './components/SplashPage.vue'
 import SplashForm from './components/SplashForm.vue'
 import Classroom from './components/Classroom.vue'
+import ChatBox from './components/ChatBox.vue'
+import Canvas from './components/Canvas.vue'
 
 const router = new VueRouter({
   routes: [
@@ -26,6 +28,6 @@ const router = new VueRouter({
 Vue.config.productionTip = false
 
 new Vue({
-  router
-  //render: h => h(SplashPage),
+  //router
+  render: h => h(Canvas),
 }).$mount('#app')
