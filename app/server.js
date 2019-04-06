@@ -21,14 +21,18 @@ app.get("/", (req, res) => {
   res.sendFile("index.html", { root: builddir });
 });
 
-// handle post data
+app.use(express.json());
+
+// handle post data for creating classroom
 app.post("/classroom", (req,res) => {
-  console.log("roomname = ", req.roomName);
+  if (req.session.id == undefined) throw "Unknown client creating classroom"; 
+  classrooms.set(req.body.roomName, req.session.id);
   res.end();
 });
 
 // map client ids to ws connection object
 const clients = new Map();
+const classrooms = new Map();
 var id = 0;
 
 // assign client ids in increasing order
