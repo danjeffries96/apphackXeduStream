@@ -1,26 +1,41 @@
 <template>
-    <div class="mainblock">
-    <div v-if="roomCreated" id="gotoRoom">
-      <h3>Room successfully created. URL:</h3>
-      <a v-bind:href="room_url">{{room_url}}</a>
-    </div>
-    <div v-else>
-      <div class="header">
-          <b-nav pills>
-            <b-nav-item v-on:click="activeTab=1" v-bind:active="activeTab === 1">Teacher</b-nav-item>
-            <b-nav-item v-on:click="activeTab=2" v-bind:active="activeTab === 2">Student</b-nav-item>
-          </b-nav>
-      </div>
-          <form v-if="activeTab === 1" id="createRoom">
-        <b-form-input id="roomName" v-model="roomName" placeholder="Classroom Name"></b-form-input>
-        <b-button v-on:click="createRoom" id="submit">Create Classroom!</b-button> 
-      </form>
-      <form v-else id="joinRoom">
-        <b-form-input id="roomID" v-model="roomID" placeholder="Classroom ID"></b-form-input>
-        <b-button v-on:click="joinRoom" id="submit">Join Room</b-button>
-      </form>
-      </div>
-    </div>
+  <div class="mainblock">
+  <div v-if="error !== ''" id="gotoRoom">
+  <h3>Error: {{error}}</h3>
+  <b-button v-on:click="error=''">Go Back</b-button>
+  </div>
+  <span class="formdiv" v-else>
+  <div class="header">
+  <b-nav pills>
+  <b-nav-item v-on:click="activeTab=1" v-bind:active="activeTab === 1">Teacher</b-nav-item>
+  <b-nav-item v-on:click="activeTab=2" v-bind:active="activeTab === 2">Student</b-nav-item>
+  </b-nav>
+  </div>
+  <form v-if="activeTab === 1" id="createRoom">
+  <b-form-input id="roomName" v-model="roomName" placeholder="Classroom Name"></b-form-input>
+  <b-button v-on:click="createRoom" id="submit">Create Classroom!</b-button>
+  </form>
+  <form v-else id="joinRoom">
+  <b-form-input id="roomID" v-model="roomID" placeholder="Classroom ID"></b-form-input>
+  <b-button v-on:click="joinRoom" id="submit">Join Room</b-button>
+  </form>
+  </span>
+  </div>
+  </template>
+<style scoped>
+.formdiv {
+  display: inline-block;
+  min-width:300px;
+}
+input {
+  margin: 10px;
+}
+.mainblock {
+  /*text-align: center;*/
+  margin: 0 auto 0 auto;
+  width: 50%;
+}
+</style>
 </template>
 
 <script>
@@ -51,7 +66,7 @@ function postData(url = ``, data = {}) {
         body: JSON.stringify(data), // body data type must match "Content-Type" header
     })
     .then(response => response.json()) // parses JSON response into native Javascript objects 
-    .catch(err => console.log("error with response from fetch"));
+    .catch(err => console.log("error with response from fetch", err));
 } 
 
 export default {
@@ -63,11 +78,14 @@ export default {
       roomCreated: false,
       room_url: "",
       activeTab : 1 ,
+      error: "",
       };
   },
   methods: {
     createRoom: function() {
-      postData("/queryRoom", { roomName: this.roomName });
+      postData("/queryRoom", { roomName: this.roomName })
+        .then(respObj => error = respObj.error)
+        .catch(err => console.log("fetch error handling failed"));
       this.$emit('clientType', 'teacher');
       this.$emit('roomName', this.roomName);
     },
@@ -80,12 +98,3 @@ export default {
   }
 }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-.mainblock {
-  /*text-align: center;*/
-  margin: 0 auto 0 auto;
-  width: 50%;
-}
-</style>

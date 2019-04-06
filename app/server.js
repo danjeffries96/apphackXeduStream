@@ -7,6 +7,7 @@ const WS_OPEN = 1;
 
 const app = express();
 const expressWS = require("express-ws")(app);
+const bodyParser = require("body-parser");
 
 const builddir = __dirname + "/dist";
 app.use(express.static(builddir));
@@ -21,10 +22,17 @@ app.get("/", (req, res) => {
   res.sendFile("index.html", { root: builddir });
 });
 
-app.use(express.json());
+app.use(bodyParser.json());
 
-app.post("/queryRoom", (res, req) => {
+app.post("/queryRoom", (req, res) => {
   console.log("req body", req.body);
+  var errString = "";
+  if (clients.classrooms.has(req.body.roomName))
+    errString = "Room name already taken";
+
+  res.status(200).json(
+    { error: errString }
+  );
 });
 
 // map client ids to ws connection object
