@@ -13,7 +13,7 @@
       </div>
           <form v-if="activeTab === 1" id="createRoom">
         <b-form-input id="roomName" v-model="roomName" placeholder="Classroom Name"></b-form-input>
-        <b-button v-on:click="createRoom" id="submit">Create Classroom!</b-button>
+        <b-button v-on:click="createRoom" id="submit">Create Classroom!</b-button> 
       </form>
       <form v-else id="joinRoom">
         <b-form-input id="roomID" v-model="roomID" placeholder="Classroom ID"></b-form-input>
@@ -24,23 +24,35 @@
 </template>
 
 <script>
-function postData(url = ``, data = {}) {
-  // Default options are marked with *
-    return fetch(url, {
-        method: "POST", // *GET, POST, PUT, DELETE, etc.
-        mode: "cors", // no-cors, cors, *same-origin
-        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: "same-origin", // include, *same-origin, omit
-        headers: {
-            "Content-Type": "application/json",
-            // "Content-Type": "application/x-www-form-urlencoded",
-        },
-        redirect: "follow", // manual, *follow, error
-        referrer: "no-referrer", // no-referrer, *client
-        body: JSON.stringify(data), // body data type must match "Content-Type" header
-    })
-    .then(response => response.json()); // parses JSON response into native Javascript objects 
-} 
+/* eslint-disable */
+import { TeacherNode, RTCNode }  from '../rtc.js'
+import '../jquery-3.3.1.min.js'
+
+// tab numbers
+const TEACHER = 1;
+const STUDENT = 2;
+
+// roomID used for joining
+// roomName used for creating
+
+// function postData(url = ``, data = {}) {
+//   // Default options are marked with *
+//     return fetch(url, {
+//         method: "POST", // *GET, POST, PUT, DELETE, etc.
+//         mode: "cors", // no-cors, cors, *same-origin
+//         cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+//         credentials: "same-origin", // include, *same-origin, omit
+//         headers: {
+//             "Content-Type": "application/json",
+//             // "Content-Type": "application/x-www-form-urlencoded",
+//         },
+//         redirect: "follow", // manual, *follow, error
+//         referrer: "no-referrer", // no-referrer, *client
+//         body: JSON.stringify(data), // body data type must match "Content-Type" header
+//     })
+//     .then(response => response.json()) // parses JSON response into native Javascript objects 
+//     .catch(err => console.log("error with response from fetch"));
+// } 
 
 export default {
   name: 'SplashForm',
@@ -50,22 +62,17 @@ export default {
       roomID: "",
       roomCreated: false,
       room_url: "",
-      activeTab : 1 };
+      activeTab : 1 ,
+      };
   },
   methods: {
     createRoom: function() {
-      var resp;
-      console.log(this.roomName)
-      postData("/classroom", {"roomName": this.roomName}).then(data => resp = data)
-      this.room_url = "potato_salad"
-      //if (!resp.err) {
-        this.roomCreated = true
-        this.room_url = resp.room_url
-        //this.$router.push({path: `classroom/${this.room_url}`})
-      //}
+      this.$emit('clientType', 'teacher');
+      this.$emit('roomName', this.roomName);
     },
     joinRoom: function() {
-
+      this.$emit('clientType', 'student');
+      this.$emit('roomID', this.roomID);
     }
   },
   props: {

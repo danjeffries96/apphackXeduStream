@@ -36,7 +36,6 @@ export default {
         this.cd = new CanvasDraw(canvas)
         this.cd.main();
 
-        console.log("done")
         this.canvasCallback(canvas)
     },
     methods: {

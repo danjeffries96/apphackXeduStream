@@ -1,9 +1,14 @@
+/* eslint-disable */
+import { ClientSocket } from './client-socket.js'
+import './simplepeer.min.js'
+
 class RTCNode {
-  constructor() {
+  constructor(vid) {
     this.stream = null;
     this.socket = new ClientSocket(this);
     this.outgoingRTC = new Map(); 
     this.incomingRTC = null; // single SimplePeer connection 
+    this.vid = vid;
   }
 
   get clientID() {
@@ -61,7 +66,7 @@ class RTCNode {
     rtc.on("signal", data => {
       if (data.type == "answer") {
         console.log("sending answer");
-        this.sendMessage({ 
+        this.socket.sendMessage({ 
           type: "presentAnswer",
           answer: data,
           pid: this.parentID,
@@ -78,6 +83,9 @@ class RTCNode {
     rtc.on("stream", remoteStream => {
       console.log("getting stream");
       // update video src also
+      this.vid.srcObject = remoteStream;
+      this.vid.play();
+      console.log("update vsrc ", this.vid.srcObject);
       this.stream = remoteStream; 
       // also add stream to each child if need to propagate new stream
       this.outgoingRTC.forEach(childRTC => {
@@ -86,13 +94,25 @@ class RTCNode {
     });
     return rtc;
   }
+
+  destroyIncoming() {
+    this.incomingRTC.destroy();
+  }
+
+  destroyOutgoing(cid) {
+    var childRTC = this.outgoingRTC.get(cid);
+    if (childRTC == null) throw "cannot break connection with unknown child" + cid;
+    childRTC.destroy();
+    this.outgoingRTC.delete(cid);
+  }
 }
 
 class TeacherNode extends RTCNode {
-  constructor(canvas) {
-    super();
+  constructor(canvas, vid) {
+    super(vid);
     if (canvas == undefined) throw "Must supply canvas parameter";
     this.canvas = canvas;
+    console.log("teach canvas = ", this.canvas);
     this.canvas.getContext("2d");  // get context once to avoid NS_UNAVAILABLE_ERROR
     this.stream = this.canvas.captureStream();
   }
@@ -102,10 +122,11 @@ class TeacherNode extends RTCNode {
   createReceiverRTC(offer) {
     throw "teacher createReceiverRTC not implemented yet";
   }
+
+  destroyIncoming() {}
 }
 
-
-export default {
-  TeacherNode: TeacherNode,
-  RTCNode: RTCNode,
+export {
+  TeacherNode as TeacherNode,
+  RTCNode as RTCNode,
 };

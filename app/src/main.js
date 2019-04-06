@@ -29,5 +29,5 @@ Vue.config.productionTip = false
 
 new Vue({
   //router
-  render: h => h(Classroom),
+  render: h => h(SplashPage),
 }).$mount('#app')
