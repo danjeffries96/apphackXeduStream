@@ -27,19 +27,32 @@ export default {
             chat: ""
         }
     },
+    props: ['socket'],
+    watch: {
+      socket(newval, oldval) {
+        this.socket = newval;
+        this.socket.receiveChat = this.receiveChat;
+      }
+    },
     components: {
         ChatMessage
     },
     methods: {
         addChat() {
+          this.socket.sendMessage({
+            type: "userChat",
+            text: this.chat,
+          })
+        },
+        receiveChat(text) { // (from server)
             var msg_obj = {
-                message: this.chat,
-                question: this.chat.substr(-1) === '?',
+                message: text,
+                question: text.substr(-1) === '?',
                 id: this.cur_id++ 
             }
-            this.chatMessages.push(msg_obj)
-            var chatdisplay = document.getElementById("chatdisplay") 
-            chatdisplay.scrollTop = chatdisplay.scrollHeight 
+            this.chatMessages.push(msg_obj);
+            var chatdisplay = document.getElementById("chatdisplay");
+            chatdisplay.scrollTop = chatdisplay.scrollHeight;
         }
     }
 }
