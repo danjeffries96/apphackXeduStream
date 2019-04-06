@@ -5,6 +5,8 @@
             <Canvas v-bind:broadcasting="broadcasting"
                     clientType="clientType" :canvasCallback="canvasCallback"></Canvas>
             <ChatBox></ChatBox>
+            <StudentDash v-if="clientType==='student'" :broadcasting="broadcasting"></StudentDash>
+            <TeacherDash v-else :broadcasting="broadcasting" :requestActive="requestActive"></TeacherDash>
         </div>
     </div>
 </template>
@@ -13,23 +15,27 @@
 import { TeacherNode, RTCNode }  from '../rtc.js'
 import Canvas from './Canvas'
 import ChatBox from './ChatBox'
+import StudentDash from './StudentDash'
+import TeacherDash from './TeacherDash'
 export default {
     name: "Classroom",
     props: ["clientType", "canvas", "roomID", "roomName"],
     data: function() {
-        return { broadcasting: false}
+        return { broadcasting: false, requestActive: false}
     },
     components: {
         Canvas,
-        ChatBox
+        ChatBox,
+        StudentDash,
+        TeacherDash
     },
     created: function() {
         this.broadcasting = this.clientType === 'teacher'
     },
     methods: {
         canvasCallback(c, v) {
-            canvas = c
-            video = v
+            var canvas = c
+            var video = v
             console.log("created room for type: ", this.clientType, canvas, video);
             if (this.clientType === "teacher") {
               this.rtc = new TeacherNode(canvas, video);
