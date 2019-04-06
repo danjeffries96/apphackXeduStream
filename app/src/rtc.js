@@ -103,3 +103,9 @@ class TeacherNode extends RTCNode {
     throw "teacher createReceiverRTC not implemented yet";
   }
 }
+
+
+export default {
+  TeacherNode: TeacherNode,
+  RTCNode: RTCNode,
+};

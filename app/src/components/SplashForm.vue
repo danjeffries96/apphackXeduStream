@@ -1,27 +1,71 @@
 <template>
     <div class="mainblock">
-    <div class="header">
-        <b-nav pills>
-          <b-nav-item v-on:click="activeTab=1" v-bind:active="activeTab === 1">Teacher</b-nav-item>
-          <b-nav-item v-on:click="activeTab=2" v-bind:active="activeTab === 2">Student</b-nav-item>
-        </b-nav>
+    <div v-if="roomCreated" id="gotoRoom">
+      <h3>Room successfully created. URL:</h3>
+      <a v-bind:href="room_url">{{room_url}}</a>
     </div>
-    <form v-if="activeTab === 1" id="createRoom">
-      <b-form-input id="roomName" v-model="text" placeholder="Classroom Name"></b-form-input>
-      <b-button id="submit">Create Classroom!</b-button>
-    </form>
-    <form v-else id="joinRoom">
-      <b-form-input id="roomID" v-model="text" placeholder="Classroom ID"></b-form-input>
-      <b-button id="submit">Join Room</b-button>
-    </form>
+    <div v-else>
+      <div class="header">
+          <b-nav pills>
+            <b-nav-item v-on:click="activeTab=1" v-bind:active="activeTab === 1">Teacher</b-nav-item>
+            <b-nav-item v-on:click="activeTab=2" v-bind:active="activeTab === 2">Student</b-nav-item>
+          </b-nav>
+      </div>
+          <form v-if="activeTab === 1" id="createRoom">
+        <b-form-input id="roomName" v-model="roomName" placeholder="Classroom Name"></b-form-input>
+        <b-button v-on:click="createRoom" id="submit">Create Classroom!</b-button>
+      </form>
+      <form v-else id="joinRoom">
+        <b-form-input id="roomID" v-model="roomID" placeholder="Classroom ID"></b-form-input>
+        <b-button v-on:click="joinRoom" id="submit">Join Room</b-button>
+      </form>
+      </div>
     </div>
 </template>
 
 <script>
+function postData(url = ``, data = {}) {
+  // Default options are marked with *
+    return fetch(url, {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        mode: "cors", // no-cors, cors, *same-origin
+        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: "same-origin", // include, *same-origin, omit
+        headers: {
+            "Content-Type": "application/json",
+            // "Content-Type": "application/x-www-form-urlencoded",
+        },
+        redirect: "follow", // manual, *follow, error
+        referrer: "no-referrer", // no-referrer, *client
+        body: JSON.stringify(data), // body data type must match "Content-Type" header
+    })
+    .then(response => response.json()); // parses JSON response into native Javascript objects 
+} 
+
 export default {
   name: 'SplashForm',
   data: function()  {
-    return { activeTab : 1 };
+    return { 
+      roomName: "",
+      roomID: "",
+      roomCreated: false,
+      room_url: "",
+      activeTab : 1 };
+  },
+  methods: {
+    createRoom: function() {
+      var resp;
+      console.log(this.roomName)
+      postData("/classroom", {"roomName": this.roomName}).then(data => resp = data)
+      //if (!resp.err) {
+        this.roomCreated = true
+        this.room_url = "http://google.com"
+        //this.room_url = resp.room_url
+      //}
+    },
+    joinRoom: function() {
+
+    }
   },
   props: {
   }

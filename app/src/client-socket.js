@@ -45,3 +45,8 @@ class ClientSocket {
       throw "WS error sending message to server: readyState = " + this.ws.readyState;
   }
 }
+
+
+export default {
+  ClientSocket: ClientSocket,
+};
