@@ -112,7 +112,6 @@ class TeacherNode extends RTCNode {
     super(vid);
     if (canvas == undefined) throw "Must supply canvas parameter";
     this.canvas = canvas;
-    console.log("teach canvas = ", this.canvas);
     this.canvas.getContext("2d");  // get context once to avoid NS_UNAVAILABLE_ERROR
     this.stream = this.canvas.captureStream();
   }
@@ -120,7 +119,8 @@ class TeacherNode extends RTCNode {
    *    used to allow student to stream to class
    */ 
   createReceiverRTC(offer) {
-    throw "teacher createReceiverRTC not implemented yet";
+    this.ogStream = this.stream;
+    return super.createReceiverRTC(offer);
   }
 
   destroyIncoming() {}

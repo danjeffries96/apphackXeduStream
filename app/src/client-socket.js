@@ -58,6 +58,10 @@ class ClientSocket {
       case "breakWithChild":
         this.rtcNode.destroyOutgoing(msg.cid);
         break; 
+      case "classroomClosed":
+        this.rtcNode.destroyIncoming();
+        alert("Classroom has been closed");
+        break;
       case "serverError": 
         console.log("server error: ", msg.error);
         break;

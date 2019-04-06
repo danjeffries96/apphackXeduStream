@@ -23,6 +23,10 @@ app.get("/", (req, res) => {
 
 app.use(express.json());
 
+app.post("/queryRoom", (res, req) => {
+  console.log("req body", req.body);
+});
+
 // map client ids to ws connection object
 const clients = new Map(); // map from client id to WS objects
 const classrooms = new Map(); // map from class room names to PeerTree objects
@@ -49,10 +53,12 @@ app.ws("/", (ws, req) => {
   ws.on("close", () => { 
     console.log("Connection ended with client ", req.session.id);
 
-    console.log("need to reconnect:", peerNodes.get(req.session.id).children);
-
     var tree = classroomSets.get(req.session.id);
+    if (tree == null) return;
     tree.remove(peerNodes.get(req.session.id));
+    clients.delete(req.session.id);
+    classroomSets.delete(req.session.id);
+    peerNodes.delete(req.session.id);
   });
 });
 
@@ -68,6 +74,7 @@ function error(errStr, ws) {
 
 
 function sendMessage(ws, msgobj) {
+  if (ws == null) return error("Unable to send message, ws closed");
   if (ws.readyState == WS_OPEN) 
     ws.send(JSON.stringify(msgobj));
   else
@@ -108,7 +115,7 @@ function processClientMessage(msg, req, ws) {
 
 function connect(parentNode, newChild) {
   var parWS = clients.get(parentNode.clientID);
-  if (parWS == undefined) return error("Undefined parent: " + parentNode.clientID, ws);
+  if (parWS == undefined) return error("Undefined parent: " + parentNode.clientID);
   // check if connection already exists
   if (parentNode.children.has(newChild.clientID))
     return error(`Already connected ${parentNode.clientID} with ${childNodec.clientID}`);
@@ -190,8 +197,23 @@ class PeerTree {
     return error(`ERROR cannot find leaf with < ${MAX_BRANCH} children.`);
   }
 
+  closeClassroom(peerNode) {
+    var ws = clients.get(peerNode.clientID);
+    try {
+      sendMessage(ws, { type: "classroomClosed" });
+    }
+    catch (err) {}
+    peerNode.children.forEach(childNode => this.closeClassroom(childNode));
+  }
+
   remove(peerNode) {
-    if (peerNode === this.root) throw "handle Deleting classroom";
+    if (peerNode === this.root) {  // teacher leaves classroom
+      // delete class room name mapping
+      this.closeClassroom(this.root);
+      this.c
+      return;
+    }
+
     peerNode.children.forEach(childNode => childNode.breakWithParent());
     // break parent connection
     peerNode.parentNode.breakWithChild(peerNode.clientID);
